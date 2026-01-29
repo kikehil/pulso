@@ -110,7 +110,7 @@ export default function UsuariosPage() {
       email: user.email,
       password: '', // No se muestra la contraseña
       role: user.role,
-      profileId: user.teacherId || user.studentId || '',
+      profileId: user.teacher?.id || user.student?.id || '',
     });
 
     // Cargar perfiles disponibles (ADMIN y COORDINADOR no los necesitan)
