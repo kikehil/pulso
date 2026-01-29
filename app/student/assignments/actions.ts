@@ -2,7 +2,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth-config';
 import { getCurrentUniversityId } from '@/lib/tenant';
 import { revalidatePath } from 'next/cache';
 import { notifyTaskSubmitted } from '@/lib/notifications';

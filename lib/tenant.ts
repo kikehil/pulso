@@ -6,7 +6,7 @@
 
 import { cookies } from 'next/headers';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth-config';
 import { prisma } from './prisma';
 
 // ============ SESIÓN DE USUARIO ============
