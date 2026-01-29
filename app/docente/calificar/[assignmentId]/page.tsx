@@ -32,7 +32,9 @@ interface Assignment {
   description: string | null;
   dueDate: Date;
   maxScore: number;
+  subjectId: string;
   subject: {
+    id: string;
     name: string;
     code: string;
   };

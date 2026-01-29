@@ -302,7 +302,13 @@ export async function getAssignmentSubmissions(assignmentId: string) {
   const assignment = await prisma.assignment.findUnique({
     where: { id: assignmentId },
     include: {
-      subject: true,
+      subject: {
+        select: {
+          id: true,
+          name: true,
+          code: true,
+        },
+      },
     },
   });
 
