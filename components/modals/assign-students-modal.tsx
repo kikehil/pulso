@@ -19,7 +19,7 @@ interface Student {
 interface EnrolledStudent extends Student {
   enrollmentId: string;
   studentId: string;
-  status: string;
+  enrolledAt: Date;
 }
 
 interface AssignStudentsModalProps {
@@ -62,7 +62,7 @@ export function AssignStudentsModal({
         getGroupStudents(groupId),
       ]);
       setAvailableStudents(available);
-      setEnrolledStudents(enrolled as EnrolledStudent[]);
+      setEnrolledStudents(enrolled);
     } catch (err) {
       setError('Error al cargar los estudiantes');
     } finally {

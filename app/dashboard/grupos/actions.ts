@@ -339,10 +339,10 @@ export async function searchGroups(query: string) {
         universityId,
         isActive: true,
         OR: [
-          { name: { contains: query, mode: 'insensitive' } },
-          { code: { contains: query, mode: 'insensitive' } },
-          { semester: { contains: query, mode: 'insensitive' } },
-          { academicYear: { contains: query, mode: 'insensitive' } },
+          { name: { contains: query } },
+          { code: { contains: query } },
+          { semester: { contains: query } },
+          { academicYear: { contains: query } },
         ],
       },
       select: {

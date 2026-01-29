@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { getStudentAssignments } from './actions';
 import Link from 'next/link';
 import { Calendar, CheckCircle, Clock, AlertCircle } from 'lucide-react';

@@ -65,9 +65,6 @@ export function AttendanceSummaryCard({
             >
               {percentage.toFixed(1)}%
             </span>
-            <span className="text-2xl font-medium text-gray">
-              {level.emoji}
-            </span>
           </div>
           <p
             className="text-sm font-medium mt-1"

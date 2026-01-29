@@ -1,10 +1,13 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
+import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { PulseTecIcon } from '@/components/pulsetec-logo';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 
-export default function AuthErrorPage() {
+function AuthErrorContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const error = searchParams.get('error');
@@ -63,6 +66,22 @@ export default function AuthErrorPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AuthErrorPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-dark via-dark/95 to-primary/20 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-8">
+            <p className="text-gray">Cargando...</p>
+          </div>
+        </div>
+      }
+    >
+      <AuthErrorContent />
+    </Suspense>
   );
 }
 

@@ -408,26 +408,14 @@ export async function getAvailableStudents(groupId?: string) {
           notIn: enrolledStudentIds,
         },
       },
-      include: {
-        user: {
-          select: {
-            name: true,
-            email: true,
-          },
-        },
-      },
-      orderBy: {
-        user: {
-          name: 'asc',
-        },
-      },
+      orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
     });
 
     return students.map((student) => ({
       id: student.id,
-      name: student.user.name || 'Sin nombre',
-      email: student.user.email,
-      enrollmentNumber: student.enrollmentNumber,
+      name: `${student.firstName} ${student.lastName}`.trim() || 'Sin nombre',
+      email: student.email,
+      enrollmentNumber: student.enrollmentId,
     }));
   } catch (error) {
     console.error('Error al obtener estudiantes:', error);
@@ -441,34 +429,25 @@ export async function getGroupStudents(groupId: string) {
     const enrollments = await prisma.enrollment.findMany({
       where: { groupId },
       include: {
-        student: {
-          include: {
-            user: {
-              select: {
-                name: true,
-                email: true,
-              },
-            },
-          },
-        },
+        student: true,
       },
       orderBy: {
         student: {
-          user: {
-            name: 'asc',
-          },
+          lastName: 'asc',
         },
       },
     });
 
     return enrollments.map((enrollment) => ({
       enrollmentId: enrollment.id,
+      id: enrollment.student.id,
       studentId: enrollment.student.id,
-      name: enrollment.student.user.name || 'Sin nombre',
-      email: enrollment.student.user.email,
-      enrollmentNumber: enrollment.student.enrollmentNumber,
-      status: enrollment.status,
-      enrolledAt: enrollment.createdAt,
+      name:
+        `${enrollment.student.firstName} ${enrollment.student.lastName}`.trim() ||
+        'Sin nombre',
+      email: enrollment.student.email,
+      enrollmentNumber: enrollment.student.enrollmentId,
+      enrolledAt: enrollment.enrolledAt,
     }));
   } catch (error) {
     console.error('Error al obtener estudiantes del grupo:', error);
@@ -503,7 +482,6 @@ export async function assignStudentToGroup(studentId: string, groupId: string) {
       data: {
         studentId,
         groupId,
-        status: 'ACTIVE',
       },
     });
 

@@ -331,6 +331,7 @@ async function main() {
           courseId: course.id,
           teacherId: course.teacherId,
           name: `${course.code} - Comisión ${j}`,
+          code: `${course.code}-G${j}`,
           schedule: schedules[Math.floor(Math.random() * schedules.length)],
         },
       });
@@ -369,8 +370,9 @@ async function main() {
   const assignments = [];
   const today = new Date();
 
-  for (const course of courses) {
-    // Crear 3 tareas por curso
+  for (const subject of subjects) {
+    const course = courses.find((c) => c.id === subject.courseId);
+    // Crear 3 tareas por materia
     for (let i = 1; i <= 3; i++) {
       const dueDate = new Date(today);
       dueDate.setDate(dueDate.getDate() + Math.floor(Math.random() * 30) + 1);
@@ -378,8 +380,9 @@ async function main() {
       const assignment = await prisma.assignment.create({
         data: {
           universityId: university1.id,
-          courseId: course.id,
-          title: `Tarea ${i} - ${course.name}`,
+          subjectId: subject.id,
+          teacherId: course?.teacherId || teachers[0].id,
+          title: `Tarea ${i} - ${subject.name}`,
           description: `Trabajo práctico sobre los temas vistos en clase. Fecha límite: ${dueDate.toLocaleDateString()}`,
           dueDate: dueDate,
           maxScore: 100,
@@ -395,7 +398,10 @@ async function main() {
   let submissionCount = 0;
   for (const assignment of assignments.slice(0, 5)) {
     // Para las primeras 5 tareas, crear entregas
-    const courseGroups = groups.filter(g => g.courseId === assignment.courseId);
+    const subjectCourseId = subjects.find((s) => s.id === assignment.subjectId)?.courseId;
+    const courseGroups = subjectCourseId
+      ? groups.filter((g) => g.courseId === subjectCourseId)
+      : [];
     
     for (const group of courseGroups) {
       const enrollments = await prisma.enrollment.findMany({

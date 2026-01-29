@@ -44,7 +44,6 @@ export async function getTeacherStudents() {
             firstName: true,
             lastName: true,
             email: true,
-            phone: true,
             avatarUrl: true,
           },
         },
@@ -161,9 +160,10 @@ export async function createStudent(data: {
     }
 
     // Verificar si el email ya existe
-    const existingEmail = await prisma.student.findUnique({
+    const existingEmail = await prisma.student.findFirst({
       where: {
         email: data.email,
+        universityId: group.universityId,
       },
     });
 
@@ -172,9 +172,10 @@ export async function createStudent(data: {
     }
 
     // Verificar si la matrícula ya existe
-    const existingEnrollment = await prisma.student.findUnique({
+    const existingEnrollment = await prisma.student.findFirst({
       where: {
-        enrollmentNumber: data.enrollmentNumber,
+        enrollmentId: data.enrollmentNumber,
+        universityId: group.universityId,
       },
     });
 
@@ -194,9 +195,7 @@ export async function createStudent(data: {
           firstName: data.firstName,
           lastName: data.lastName,
           email: data.email,
-          phone: data.phone || null,
-          enrollmentNumber: data.enrollmentNumber,
-          dateOfBirth: new Date(), // Fecha por defecto
+          enrollmentId: data.enrollmentNumber,
         },
       });
 

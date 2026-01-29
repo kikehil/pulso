@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { getStudentGrades } from './actions';
 import { BarChart3, TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';

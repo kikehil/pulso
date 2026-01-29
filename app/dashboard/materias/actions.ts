@@ -166,9 +166,9 @@ export async function searchSubjects(query: string) {
         universityId,
         isActive: true,
         OR: [
-          { name: { contains: query, mode: 'insensitive' } },
-          { code: { contains: query, mode: 'insensitive' } },
-          { description: { contains: query, mode: 'insensitive' } },
+          { name: { contains: query } },
+          { code: { contains: query } },
+          { description: { contains: query } },
         ],
       },
       include: {

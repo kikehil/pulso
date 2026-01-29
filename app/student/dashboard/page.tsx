@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { getStudentDashboard } from './actions';
 import { BookOpen, Calendar, TrendingUp, AlertCircle } from 'lucide-react';
 import Link from 'next/link';

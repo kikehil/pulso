@@ -24,6 +24,7 @@ interface Group {
   id: string;
   name: string;
   code: string;
+  subjectId?: string;
   schedule: string | null;
   isActive: boolean;
   course: {
@@ -104,12 +105,9 @@ export default function TeacherGroupsPage() {
 
   const handleEditGroup = (group: Group) => {
     setEditingGroup({
-      id: group.id,
-      name: group.name,
-      code: group.code,
+      ...group,
       subjectId: group.course.id, // course.id ahora contiene el subjectId gracias al mapeo
       schedule: group.schedule || '',
-      isActive: group.isActive,
     });
     setGroupModalOpen(true);
   };
@@ -636,7 +634,11 @@ export default function TeacherGroupsPage() {
           setEditingCourse(null);
         }}
         onSuccess={loadData}
-        course={editingCourse}
+        course={
+          editingCourse
+            ? { ...editingCourse, description: editingCourse.description ?? '' }
+            : null
+        }
       />
 
       <GroupModal
@@ -646,7 +648,18 @@ export default function TeacherGroupsPage() {
           setEditingGroup(null);
         }}
         onSuccess={loadData}
-        group={editingGroup}
+        group={
+          editingGroup
+            ? {
+                id: editingGroup.id,
+                name: editingGroup.name,
+                code: editingGroup.code,
+                subjectId: editingGroup.subjectId ?? editingGroup.course.id,
+                schedule: editingGroup.schedule ?? '',
+                isActive: editingGroup.isActive,
+              }
+            : null
+        }
       />
 
       {selectedGroup && (
