@@ -57,7 +57,11 @@ export async function getUsers(): Promise<UserWithProfile[]> {
     },
   });
 
-  return users;
+  // Convertir role de string a Role type
+  return users.map((user) => ({
+    ...user,
+    role: user.role as Role,
+  })) as UserWithProfile[];
 }
 
 // Crear nuevo usuario
@@ -299,6 +303,10 @@ export async function searchUsers(query: string): Promise<UserWithProfile[]> {
     },
   });
 
-  return users;
+  // Convertir role de string a Role type
+  return users.map((user) => ({
+    ...user,
+    role: user.role as Role,
+  })) as UserWithProfile[];
 }
 
