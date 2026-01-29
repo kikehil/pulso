@@ -55,6 +55,11 @@ export async function getStudentDashboard() {
                 code: true,
               },
             },
+            subject: {
+              select: {
+                id: true,
+              },
+            },
           },
         },
       },
@@ -65,6 +70,7 @@ export async function getStudentDashboard() {
       enrollments.map(async (enrollment) => {
         const groupId = enrollment.groupId;
         const courseId = enrollment.group.courseId;
+        const subjectId = enrollment.group.subject?.id;
 
         // Obtener calificación promedio (mock por ahora)
         const currentGrade = 8.5; // TODO: Calcular desde submissions
@@ -72,7 +78,7 @@ export async function getStudentDashboard() {
         // Obtener porcentaje de asistencia
         const attendanceSessions = await prisma.attendanceSession.count({
           where: {
-            groupId,
+            subjectId: subjectId || undefined,
           },
         });
 
@@ -81,7 +87,7 @@ export async function getStudentDashboard() {
             studentId,
             status: 'PRESENTE',
             session: {
-              groupId,
+              subjectId: subjectId || undefined,
             },
           },
         });

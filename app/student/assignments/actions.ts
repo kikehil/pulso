@@ -10,11 +10,15 @@ import { notifyTaskSubmitted } from '@/lib/notifications';
 async function getCurrentStudentId() {
   const session = await getServerSession(authOptions);
   
-  if (!session?.user?.studentId) {
+  if (!session?.user) {
+    throw new Error('No hay sesión activa');
+  }
+  
+  if (!(session.user as any)?.studentId) {
     throw new Error('No se encontró el ID del estudiante en la sesión');
   }
   
-  return session.user.studentId;
+  return (session.user as any).studentId;
 }
 
 export async function getStudentAssignments() {

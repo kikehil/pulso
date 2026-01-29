@@ -86,3 +86,21 @@ export const getAttendancePercentColor = (percent: number): string => {
   return '#EF4444'; // Rojo - Bajo
 };
 
+// Obtener nivel de asistencia basado en porcentaje
+export const getAttendanceLevel = (percent: number): {
+  level: 'excellent' | 'good' | 'warning' | 'danger';
+  label: string;
+  color: string;
+} => {
+  if (percent >= 90) {
+    return { level: 'excellent', label: 'Excelente', color: 'text-green-600' };
+  }
+  if (percent >= 80) {
+    return { level: 'good', label: 'Bueno', color: 'text-cyan-600' };
+  }
+  if (percent >= 70) {
+    return { level: 'warning', label: 'Regular', color: 'text-yellow-600' };
+  }
+  return { level: 'danger', label: 'Bajo', color: 'text-red-600' };
+};
+
