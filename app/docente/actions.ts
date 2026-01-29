@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { getCurrentUniversityId } from '@/lib/tenant';
 import { revalidatePath } from 'next/cache';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth-config';
 
 // Obtener el ID del docente desde la sesión actual
 async function getCurrentTeacherId() {
@@ -113,21 +113,27 @@ export async function getSubjectStudents(subjectId: string) {
     },
   });
 
-  // Obtener asistencia de hoy
+  // Obtener asistencia de hoy usando AttendanceSession
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
 
-  const todayAttendances = await prisma.attendance.findMany({
+  const todaySession = await prisma.attendanceSession.findFirst({
     where: {
       subjectId,
       date: {
         gte: today,
+        lt: tomorrow,
       },
+    },
+    include: {
+      records: true,
     },
   });
 
   const attendanceMap = new Map(
-    todayAttendances.map((a) => [a.studentId, a])
+    todaySession?.records.map((r) => [r.studentId, r]) || []
   );
 
   return studentSubjects.map((ss) => ({
@@ -147,14 +153,38 @@ export async function saveAttendance(data: {
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
 
-  // Upsert: actualizar si existe, crear si no
-  await prisma.attendance.upsert({
+  // Buscar o crear sesión de asistencia de hoy
+  let session = await prisma.attendanceSession.findFirst({
     where: {
-      studentId_subjectId_date: {
-        studentId: data.studentId,
+      subjectId: data.subjectId,
+      teacherId,
+      date: {
+        gte: today,
+        lt: tomorrow,
+      },
+    },
+  });
+
+  if (!session) {
+    session = await prisma.attendanceSession.create({
+      data: {
+        universityId,
         subjectId: data.subjectId,
+        teacherId,
         date: today,
+      },
+    });
+  }
+
+  // Upsert del registro de asistencia
+  await prisma.attendanceRecord.upsert({
+    where: {
+      sessionId_studentId: {
+        sessionId: session.id,
+        studentId: data.studentId,
       },
     },
     update: {
@@ -162,11 +192,8 @@ export async function saveAttendance(data: {
       notes: data.notes,
     },
     create: {
-      universityId,
+      sessionId: session.id,
       studentId: data.studentId,
-      subjectId: data.subjectId,
-      teacherId,
-      date: today,
       status: data.status,
       notes: data.notes,
     },
@@ -188,16 +215,40 @@ export async function bulkSaveAttendance(data: {
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
 
-  // Guardar cada asistencia
+  // Buscar o crear sesión de asistencia de hoy
+  let session = await prisma.attendanceSession.findFirst({
+    where: {
+      subjectId: data.subjectId,
+      teacherId,
+      date: {
+        gte: today,
+        lt: tomorrow,
+      },
+    },
+  });
+
+  if (!session) {
+    session = await prisma.attendanceSession.create({
+      data: {
+        universityId,
+        subjectId: data.subjectId,
+        teacherId,
+        date: today,
+      },
+    });
+  }
+
+  // Guardar cada registro de asistencia
   await Promise.all(
     data.attendances.map((attendance) =>
-      prisma.attendance.upsert({
+      prisma.attendanceRecord.upsert({
         where: {
-          studentId_subjectId_date: {
+          sessionId_studentId: {
+            sessionId: session.id,
             studentId: attendance.studentId,
-            subjectId: data.subjectId,
-            date: today,
           },
         },
         update: {
@@ -205,11 +256,8 @@ export async function bulkSaveAttendance(data: {
           notes: attendance.notes,
         },
         create: {
-          universityId,
+          sessionId: session.id,
           studentId: attendance.studentId,
-          subjectId: data.subjectId,
-          teacherId,
-          date: today,
           status: attendance.status,
           notes: attendance.notes,
         },
@@ -389,12 +437,15 @@ export async function getTeacherStats() {
   // Asistencia hoy
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
 
-  const todayAttendances = await prisma.attendance.count({
+  const todayAttendances = await prisma.attendanceSession.count({
     where: {
       teacherId,
       date: {
         gte: today,
+        lt: tomorrow,
       },
     },
   });
