@@ -176,7 +176,7 @@ export default function CalificarPage() {
       {/* Header */}
       <div className="flex items-center gap-4">
         <Link
-          href={`/docente/tareas/${assignment.subject.id}`}
+          href={`/docente/tareas/${assignment.subjectId}`}
           className="p-2 rounded-lg hover:bg-light transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
