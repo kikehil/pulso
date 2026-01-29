@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-light text-dark-900 antialiased font-sans;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+  }
+  
+  button {
+    @apply font-medium;
+  }
+}
+
+@layer components {
+  /* PulseTec Card Styles */
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-all duration-200 hover:shadow-md;
+  }
+
+  .card-header {
+    @apply flex items-center justify-between mb-4;
+  }
+
+  .card-title {
+    @apply text-lg font-bold text-dark;
+  }
+
+  .card-subtitle {
+    @apply text-sm font-regular text-gray;
+  }
+
+  /* PulseTec Button Styles */
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-white hover:bg-primary-600 focus:ring-primary shadow-sm;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-200 text-dark hover:bg-gray-300 focus:ring-gray;
+  }
+
+  /* PulseTec Metric Card */
+  .metric-card {
+    @apply card hover:border-primary hover:shadow-lg cursor-pointer;
+  }
+
+  .metric-value {
+    @apply text-3xl font-bold text-dark mb-1;
+  }
+
+  .metric-label {
+    @apply text-sm font-medium text-gray;
+  }
+
+  .metric-icon {
+    @apply w-12 h-12 rounded-xl flex items-center justify-center;
+  }
+
+  /* PulseTec Sidebar Styles */
+  .sidebar-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded-lg text-gray hover:bg-primary/10 hover:text-primary transition-all duration-200;
+  }
+
+  .sidebar-link.active {
+    @apply bg-primary text-white font-medium shadow-sm;
+  }
+
+  /* PulseTec Input Styles */
+  .input-field {
+    @apply w-full px-4 py-2 rounded-lg border border-gray focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all duration-200;
+  }
+
+  .search-input {
+    @apply input-field pl-10;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+

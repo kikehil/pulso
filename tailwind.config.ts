@@ -1,0 +1,73 @@
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: [
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        // PulseTec Control - Paleta Profesional
+        primary: {
+          DEFAULT: '#06B6D4', // Cyan principal
+          50: '#ecfeff',
+          100: '#cffafe',
+          200: '#a5f3fc',
+          300: '#67e8f9',
+          400: '#22d3ee',
+          500: '#06B6D4', // ⭐ Color principal
+          600: '#0891b2',
+          700: '#0e7490',
+          800: '#155e75',
+          900: '#164e63',
+        },
+        dark: {
+          DEFAULT: '#0F172A', // Slate-950
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a', // ⭐ Dark principal
+          950: '#020617',
+        },
+        gray: {
+          DEFAULT: '#64748B', // Slate-500
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748B', // ⭐ Gray principal
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
+        },
+        light: {
+          DEFAULT: '#F8FAFC', // Slate-50
+          50: '#F8FAFC', // ⭐ Light principal
+          100: '#f1f5f9',
+        },
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+      fontWeight: {
+        regular: '400',
+        medium: '500',
+        bold: '700',
+      },
+    },
+  },
+  plugins: [],
+};
+
+export default config;
+
