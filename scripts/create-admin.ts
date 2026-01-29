@@ -25,22 +25,22 @@ async function createAdminUser() {
 
     // Verificar si ya existe el admin
     const existingAdmin = await prisma.user.findUnique({
-      where: { email: 'admin@universidad.edu' },
+      where: { email: 'admin@tecnologico.edu.mx' },
     });
 
     if (existingAdmin) {
       console.log('El usuario admin ya existe');
-      console.log('Email: admin@universidad.edu');
-      console.log('Contraseña: admin123');
+      console.log('Email: admin@tecnologico.edu.mx');
+      console.log('Contraseña: Admin123!');
       return;
     }
 
     // Crear usuario admin
-    const hashedPassword = await hashPassword('admin123');
+    const hashedPassword = await hashPassword('Admin123!');
 
     const admin = await prisma.user.create({
       data: {
-        email: 'admin@universidad.edu',
+        email: 'admin@tecnologico.edu.mx',
         password: hashedPassword,
         role: 'ADMIN',
         isActive: true,
@@ -52,18 +52,18 @@ async function createAdminUser() {
     console.log('✓ Usuario Administrador creado exitosamente!');
     console.log('================================================');
     console.log('\nCredenciales de acceso:');
-    console.log('Email: admin@universidad.edu');
-    console.log('Contraseña: admin123');
+    console.log('Email: admin@tecnologico.edu.mx');
+    console.log('Contraseña: Admin123!');
     console.log('\n⚠️  IMPORTANTE: Cambia la contraseña después del primer login!');
     console.log('================================================\n');
 
     // Crear un docente de prueba
-    const teacherHashedPassword = await hashPassword('docente123');
+    const teacherHashedPassword = await hashPassword('Docente123!');
 
     const teacher = await prisma.teacher.create({
       data: {
         universityId: university.id,
-        email: 'docente@universidad.edu',
+        email: 'docente@tecnologico.edu.mx',
         firstName: 'Carlos',
         lastName: 'Rodríguez',
         phone: '555-0101',
@@ -72,7 +72,7 @@ async function createAdminUser() {
 
     const docenteUser = await prisma.user.create({
       data: {
-        email: 'docente@universidad.edu',
+        email: 'docente@tecnologico.edu.mx',
         password: teacherHashedPassword,
         role: 'DOCENTE',
         isActive: true,
@@ -82,8 +82,8 @@ async function createAdminUser() {
     });
 
     console.log('✓ Usuario Docente de prueba creado!');
-    console.log('Email: docente@universidad.edu');
-    console.log('Contraseña: docente123\n');
+    console.log('Email: docente@tecnologico.edu.mx');
+    console.log('Contraseña: Docente123!\n');
 
   } catch (error) {
     console.error('Error creando usuario admin:', error);

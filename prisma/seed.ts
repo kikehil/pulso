@@ -419,15 +419,17 @@ async function main() {
             submittedAt.setDate(submittedAt.getDate() - Math.floor(Math.random() * 7));
           }
 
+          const isGraded = Math.random() > 0.4;
+
           await prisma.submission.create({
             data: {
               assignmentId: assignment.id,
               studentId: enrollment.studentId,
               content: 'Trabajo completado según las especificaciones del curso.',
               submittedAt: submittedAt,
-              score: Math.floor(Math.random() * 30) + 70, // Notas entre 70 y 100
-              feedback: 'Buen trabajo. Sigue así.',
-              gradedAt: new Date(),
+              score: isGraded ? Math.floor(Math.random() * 30) + 70 : null,
+              feedback: isGraded ? 'Buen trabajo. Sigue así.' : null,
+              gradedAt: isGraded ? new Date() : null,
             },
           });
           submissionCount++;

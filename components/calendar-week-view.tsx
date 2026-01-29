@@ -31,7 +31,13 @@ interface CalendarWeekViewProps {
 }
 
 const DAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-const HOURS = Array.from({ length: 10 }, (_, i) => i + 8); // 8:00 AM a 6:00 PM (más compacto)
+const START_MINUTES = 7 * 60; // 07:00
+const END_MINUTES = 19 * 60; // 19:00
+const SLOT_MINUTES = 50;
+const TIME_SLOTS = Array.from(
+  { length: Math.ceil((END_MINUTES - START_MINUTES) / SLOT_MINUTES) },
+  (_, i) => START_MINUTES + i * SLOT_MINUTES
+).filter((minutes) => minutes < END_MINUTES);
 
 export function CalendarWeekView({
   schedules,
@@ -44,28 +50,39 @@ export function CalendarWeekView({
   const [hoveredCell, setHoveredCell] = useState<string | null>(null);
 
   // Función para verificar si hay una clase en un slot específico
-  const getClassAtSlot = (day: number, hour: number) => {
+  const timeToMinutes = (time: string) => {
+    const [hours, minutes] = time.split(':').map((value) => parseInt(value, 10));
+    return hours * 60 + minutes;
+  };
+
+  const minutesToTime = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+  };
+
+  const getClassAtSlot = (day: number, slotMinutes: number) => {
     return schedules.find((schedule) => {
       if (schedule.dayOfWeek !== day) return false;
       
-      const startHour = parseInt(schedule.startTime.split(':')[0]);
-      const endHour = parseInt(schedule.endTime.split(':')[0]);
+      const startMinutes = timeToMinutes(schedule.startTime);
+      const endMinutes = timeToMinutes(schedule.endTime);
       
-      return hour >= startHour && hour < endHour;
+      return slotMinutes >= startMinutes && slotMinutes < endMinutes;
     });
   };
 
   // Función para verificar si es el bloque inicial de la clase
-  const isStartBlock = (schedule: Schedule, hour: number) => {
-    const startHour = parseInt(schedule.startTime.split(':')[0]);
-    return hour === startHour;
+  const isStartBlock = (schedule: Schedule, slotMinutes: number) => {
+    const startMinutes = timeToMinutes(schedule.startTime);
+    return slotMinutes === startMinutes;
   };
 
   // Función para calcular el número de horas que ocupa una clase
   const getClassSpan = (schedule: Schedule) => {
-    const startHour = parseInt(schedule.startTime.split(':')[0]);
-    const endHour = parseInt(schedule.endTime.split(':')[0]);
-    return endHour - startHour;
+    const startMinutes = timeToMinutes(schedule.startTime);
+    const endMinutes = timeToMinutes(schedule.endTime);
+    return Math.max(1, Math.ceil((endMinutes - startMinutes) / SLOT_MINUTES));
   };
 
   // Verificar si una clase está en curso
@@ -81,8 +98,8 @@ export function CalendarWeekView({
     );
   };
 
-  const handleCellClick = (day: number, hour: number) => {
-    const classAtSlot = getClassAtSlot(day, hour);
+  const handleCellClick = (day: number, slotMinutes: number) => {
+    const classAtSlot = getClassAtSlot(day, slotMinutes);
     
     if (classAtSlot) {
       if (isEditMode) {
@@ -92,7 +109,7 @@ export function CalendarWeekView({
         router.push(`/teacher/class/${classAtSlot.group.id}?tab=attendance`);
       }
     } else if (isEditMode) {
-      onAddClass(day, `${hour.toString().padStart(2, '0')}:00`);
+      onAddClass(day, minutesToTime(slotMinutes));
     }
   };
 
@@ -113,21 +130,21 @@ export function CalendarWeekView({
 
           {/* Body: Horas y clases */}
           <div className="grid grid-cols-8">
-            {HOURS.map((hour) => (
-              <div key={hour} className="contents">
+            {TIME_SLOTS.map((slotMinutes) => (
+              <div key={slotMinutes} className="contents">
                 {/* Columna de hora */}
                 <div className="border-r border-slate-200 p-2 text-xs text-slate-600 font-medium bg-slate-50 flex items-center">
-                  {hour.toString().padStart(2, '0')}:00
+                  {minutesToTime(slotMinutes)}
                 </div>
 
                 {/* Celdas para cada día (Lunes a Viernes) */}
                 {[1, 2, 3, 4, 5].map((day) => {
-                  const classAtSlot = getClassAtSlot(day, hour);
-                  const cellKey = `${day}-${hour}`;
+                  const classAtSlot = getClassAtSlot(day, slotMinutes);
+                  const cellKey = `${day}-${slotMinutes}`;
                   const isHovered = hoveredCell === cellKey;
 
                   // Si hay una clase y es el bloque inicial, renderizar la tarjeta
-                  if (classAtSlot && isStartBlock(classAtSlot, hour)) {
+                  if (classAtSlot && isStartBlock(classAtSlot, slotMinutes)) {
                     const span = getClassSpan(classAtSlot);
                     const isCurrent = isCurrentClass(classAtSlot);
 
@@ -138,7 +155,7 @@ export function CalendarWeekView({
                         style={{ gridRow: `span ${span}` }}
                       >
                         <div
-                          onClick={() => handleCellClick(day, hour)}
+                          onClick={() => handleCellClick(day, slotMinutes)}
                           className={`
                             h-full rounded-lg p-2 cursor-pointer transition-all duration-200
                             ${isCurrent 
@@ -227,7 +244,7 @@ export function CalendarWeekView({
                         }
                         ${isHovered ? 'bg-cyan-50' : ''}
                       `}
-                      onClick={() => handleCellClick(day, hour)}
+                    onClick={() => handleCellClick(day, slotMinutes)}
                       onMouseEnter={() => isEditMode && setHoveredCell(cellKey)}
                       onMouseLeave={() => setHoveredCell(null)}
                     >

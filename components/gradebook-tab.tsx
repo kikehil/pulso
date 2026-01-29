@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Save, AlertCircle, TrendingUp, TrendingDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getGradebookData, updateGrade } from '@/app/teacher/class/[id]/actions';
 
 interface Student {
   id: string;
@@ -55,34 +56,8 @@ export function GradebookTab({ groupId }: GradebookTabProps) {
   async function loadGradebookData() {
     setLoading(true);
     try {
-      // TODO: Implementar server action
-      // const result = await getGradebookData(groupId);
-      // setData(result);
-      
-      // Mock data para desarrollo
-      setData({
-        students: [
-          { id: '1', firstName: 'Juan', lastName: 'Pérez', avatarUrl: null },
-          { id: '2', firstName: 'María', lastName: 'García', avatarUrl: null },
-          { id: '3', firstName: 'Carlos', lastName: 'López', avatarUrl: null },
-        ],
-        assignments: [
-          { id: 'a1', title: 'Tarea 1', maxScore: 100, weight: 20 },
-          { id: 'a2', title: 'Examen Parcial', maxScore: 100, weight: 30 },
-          { id: 'a3', title: 'Proyecto Final', maxScore: 100, weight: 50 },
-        ],
-        grades: [
-          { studentId: '1', assignmentId: 'a1', score: 85 },
-          { studentId: '1', assignmentId: 'a2', score: 90 },
-          { studentId: '1', assignmentId: 'a3', score: 95 },
-          { studentId: '2', assignmentId: 'a1', score: 78 },
-          { studentId: '2', assignmentId: 'a2', score: 55 },
-          { studentId: '2', assignmentId: 'a3', score: 88 },
-          { studentId: '3', assignmentId: 'a1', score: 92 },
-          { studentId: '3', assignmentId: 'a2', score: 88 },
-          { studentId: '3', assignmentId: 'a3', score: null },
-        ],
-      });
+      const result = await getGradebookData(groupId);
+      setData(result);
     } catch (error) {
       console.error('Error loading gradebook:', error);
       alert('Error al cargar las calificaciones');
@@ -148,8 +123,7 @@ export function GradebookTab({ groupId }: GradebookTabProps) {
 
     setSaving(true);
     try {
-      // TODO: Implementar server action
-      // await updateGrade({ studentId, assignmentId, score: numValue });
+      await updateGrade({ groupId, studentId, assignmentId, score: numValue });
       
       // Actualizar estado local
       setData((prev) => {

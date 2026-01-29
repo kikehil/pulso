@@ -239,3 +239,147 @@ export async function saveAttendance(
   }
 }
 
+export async function getGradebookData(groupId: string) {
+  const teacherId = await getCurrentTeacherId();
+
+  const group = await prisma.group.findFirst({
+    where: {
+      id: groupId,
+      teacherId,
+      isActive: true,
+    },
+    select: {
+      id: true,
+      subjectId: true,
+      courseId: true,
+    },
+  });
+
+  if (!group) {
+    throw new Error('Grupo no encontrado');
+  }
+
+  const subjectId = group.subjectId || group.courseId;
+
+  const enrollments = await prisma.enrollment.findMany({
+    where: { groupId },
+    include: {
+      student: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          avatarUrl: true,
+        },
+      },
+    },
+    orderBy: {
+      student: {
+        lastName: 'asc',
+      },
+    },
+  });
+
+  const students = enrollments.map((e) => e.student);
+
+  const assignments = await prisma.assignment.findMany({
+    where: {
+      subjectId,
+      teacherId,
+      isActive: true,
+    },
+    select: {
+      id: true,
+      title: true,
+      maxScore: true,
+    },
+    orderBy: {
+      dueDate: 'asc',
+    },
+  });
+
+  const weights = assignments.length
+    ? assignments.map((_, index) => {
+        const base = Math.floor(100 / assignments.length);
+        const remainder = 100 - base * assignments.length;
+        return base + (index < remainder ? 1 : 0);
+      })
+    : [];
+
+  const gradeAssignments = assignments.map((assignment, index) => ({
+    ...assignment,
+    weight: weights[index] ?? 0,
+  }));
+
+  const submissions = await prisma.submission.findMany({
+    where: {
+      assignmentId: {
+        in: assignments.map((a) => a.id),
+      },
+      studentId: {
+        in: students.map((s) => s.id),
+      },
+    },
+    select: {
+      studentId: true,
+      assignmentId: true,
+      score: true,
+    },
+  });
+
+  return {
+    students,
+    assignments: gradeAssignments,
+    grades: submissions,
+  };
+}
+
+export async function updateGrade(params: {
+  groupId: string;
+  studentId: string;
+  assignmentId: string;
+  score: number;
+}) {
+  const teacherId = await getCurrentTeacherId();
+
+  const group = await prisma.group.findFirst({
+    where: {
+      id: params.groupId,
+      teacherId,
+      isActive: true,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!group) {
+    throw new Error('Grupo no encontrado');
+  }
+
+  await prisma.submission.upsert({
+    where: {
+      assignmentId_studentId: {
+        assignmentId: params.assignmentId,
+        studentId: params.studentId,
+      },
+    },
+    update: {
+      score: params.score,
+      gradedBy: teacherId,
+      gradedAt: new Date(),
+    },
+    create: {
+      assignmentId: params.assignmentId,
+      studentId: params.studentId,
+      score: params.score,
+      gradedBy: teacherId,
+      gradedAt: new Date(),
+      submittedAt: new Date(),
+    },
+  });
+
+  revalidatePath(`/teacher/class/${params.groupId}`);
+  return { success: true };
+}
+
