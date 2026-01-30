@@ -46,10 +46,9 @@ const menuItems = [
     title: 'Mensajes',
     icon: MessageSquare,
     href: '/teacher/messages',
-    badge: 'Próximamente',
   },
   {
-    title: 'Perfil',
+    title: 'Mi Perfil',
     icon: User,
     href: '/teacher/profile',
   },
