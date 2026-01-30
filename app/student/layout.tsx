@@ -1,10 +1,10 @@
-import { TeacherSidebar } from '@/components/teacher-sidebar';
 import { Navbar } from '@/components/navbar';
-import { getCurrentUniversity, getCurrentUniversityId } from '@/lib/tenant';
+import { StudentSidebar } from '@/components/student-sidebar';
 import { SidebarProvider } from '@/contexts/sidebar-context';
 import { SidebarLayoutWrapper } from '@/components/sidebar-layout-wrapper';
+import { getCurrentUniversity, getCurrentUniversityId } from '@/lib/tenant';
 
-export default async function TeacherGroupsLayout({
+export default async function StudentLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -14,13 +14,11 @@ export default async function TeacherGroupsLayout({
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen bg-light">
-        <TeacherSidebar universityName={university?.name || 'Tecnologico de Panuco'} />
+      <div className="min-h-screen bg-light">
+        <StudentSidebar universityName={university?.name || 'Tecnologico de Panuco'} />
         <SidebarLayoutWrapper>
           <Navbar universityName={university?.name || 'Tecnologico de Panuco'} />
-          <main className="flex-1 overflow-y-auto p-6">
-            {children}
-          </main>
+          {children}
         </SidebarLayoutWrapper>
       </div>
     </SidebarProvider>

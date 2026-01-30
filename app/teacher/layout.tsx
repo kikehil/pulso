@@ -14,13 +14,11 @@ export default async function TeacherDashboardLayout({
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen bg-light">
+      <div className="min-h-screen bg-light">
         <TeacherSidebar universityName={university?.name || 'Tecnologico de Panuco'} />
         <SidebarLayoutWrapper>
-          <Navbar />
-          <main className="flex-1 overflow-y-auto p-6">
-            {children}
-          </main>
+          <Navbar universityName={university?.name || 'Tecnologico de Panuco'} />
+          {children}
         </SidebarLayoutWrapper>
       </div>
     </SidebarProvider>
