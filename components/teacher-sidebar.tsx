@@ -156,11 +156,6 @@ export function TeacherSidebar({ universityName = 'Tecnologico de Panuco' }: Tea
               {!collapsed && (
                 <span className="flex-1">{item.title}</span>
               )}
-              {!collapsed && item.badge && (
-                <span className="px-2 py-0.5 bg-primary/20 text-primary text-[10px] font-medium rounded-full">
-                  {item.badge}
-                </span>
-              )}
             </Link>
           );
         })}
